@@ -1,0 +1,32 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "description": "website",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.10.6",
+    "jade": "^1.8.2",
+    "morgan": "^1.5.0",
+    "mysql": "^2.5.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FrontEnd-home/website.git"
+  },
+  "keywords": [
+    "[\"node\"",
+    "\"express\"",
+    "\"website\"",
+    "\"mysql\"]"
+  ],
+  "author": "FrontEnd-Ctrip",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FrontEnd-home/website/issues"
+  },
+  "homepage": "https://github.com/FrontEnd-home/website"
+}
