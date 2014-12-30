@@ -11,9 +11,9 @@ app.engine('jade', require('jade').__express);
 app.use(morgan('HTTP/:http-version :method :status :url :response-time ms :date :user-agent :referrer'));
 app.use(express.static(__dirname + '/public'));
 
-app.get(/^\/index?/, routerController.index);
-app.get(/^\/count/, routerController.count);
-app.get('*', routerController.list);
+app.get(/^\/(index|home)?$/, routerController.index);
+app.get(/^\/count$/, routerController.count);
+app.get(/^\/\w+(\/)?(\w+)?$/, routerController.list);
 
 var server = app.listen(app.get('port'), function() {
     console.log('Listening on port %d', server.address().port);
