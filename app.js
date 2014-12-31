@@ -14,6 +14,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.get(/^\/(index|home)?$/, routerController.index);
 app.get(/^\/count$/, routerController.count);
+app.all(/^\/ajax\/list$/, routerController.ajaxlist);
 //app.get(/^\/add/, routerController.add);
 app.get(/^\/\w+(\/)?(\w+)?$/, routerController.list);
 
