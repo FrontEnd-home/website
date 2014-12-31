@@ -6,7 +6,7 @@ var routerController = require("./routes/controller").controller;
 
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
-app.engine('ejs', require('ejs').__express);
+app.set('view engine', 'ejs');
 //app.engine('jade', require('jade').__express);
 //@see https://www.npmjs.com/package/morgan 日志格式参考这里format.
 app.use(morgan('HTTP/:http-version :method :status :url :response-time ms :date :user-agent :referrer'));
