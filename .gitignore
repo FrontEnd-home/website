@@ -15,4 +15,7 @@ Thumbs.db
 .nojekyll
 .project
 .settings/
-_site/
+#_site/
+*.log
+assets/css/
+assets/test/

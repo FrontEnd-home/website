@@ -1,7 +1,7 @@
 var Mock = require("mockjs");
 
-exports.index = function(req, res){
-  var template = {
+exports.index = function(req, res) {
+	var template = {
     "errno": 0,
     "msg": "",
     "data|10": [{
@@ -28,8 +28,6 @@ exports.index = function(req, res){
     }]
   };
 
-  var jsonData = Mock.mock(template);
-  //debugger;
-  //console.log(jsonData);
-  res.render('index',{list: jsonData.data});
+	var jsonData = Mock.mock(template);
+	res.send(JSON.stringify(jsonData, null, 4));
 };
