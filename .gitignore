@@ -17,4 +17,5 @@ Thumbs.db
 .settings/
 #_site/
 *.log
+.sass-cache/
 assets/css/

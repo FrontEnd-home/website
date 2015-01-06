@@ -5,6 +5,7 @@ var gulp = require('gulp');
 // 引入组件
 var jshint = require('gulp-jshint');
 var sass = require('gulp-sass');
+var sass = require('gulp-ruby-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
@@ -12,7 +13,9 @@ var rename = require('gulp-rename');
 // 定义一些变量
 var static_sass = './assets/sass/application.css.scss',
     test_files = './assets/test/*.scss',
+    test_sass = './assets/sass/application.scss',
     sass_files = './assets/sass/*.scss',
+    sourcemapPath = './assets/css',
     css_file = './assets/css';
 
 // Lint任务 检查脚本
@@ -24,8 +27,10 @@ gulp.task('lint', function() {
 
 // Sass任务 编译Sass
 gulp.task('sass', function() {
-    gulp.src(test_files)
-        .pipe(sass())
+    gulp.src(static_sass)
+        .pipe(sass({style:'expanded'}))
+        //.pipe(sass({sourcemap: true, sourcemapPath: sourcemapPath}))
+        .on('error', function (err) { console.log(err.message); })
         .pipe(gulp.dest(css_file));
 });
 

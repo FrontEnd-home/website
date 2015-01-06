@@ -6,10 +6,11 @@
   "dependencies": {
     "ejs": "^1.0.0",
     "express": "^4.10.6",
+    "gulp": "^3.8.10",
+    "gulp-ruby-sass": "^0.7.1",
     "jade": "^1.8.2",
     "mockjs": "^0.1.4",
     "morgan": "^1.5.0",
-    "gulp": "^3.8.10",
     "mysql": "^2.5.4"
   },
   "devDependencies": {

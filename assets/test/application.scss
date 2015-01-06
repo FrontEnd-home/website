@@ -11,8 +11,7 @@
  * http://mozilla.org/MPL/2.0/
  */
 
-@import 'global/variables';
-//@import 'global/icons';
-//@import 'global/classes';
-@import 'global/base';
-
+@import 'global/variables',
+        'global/icons',
+        'global/classes',
+        'global/base';

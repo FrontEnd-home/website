@@ -11,3 +11,29 @@
   margin: $margin / 2;
   border-color: $blue;
 }
+
+%icon{
+  display:inline-block;
+}
+%icon-link{
+  width:16px;
+  height:16px;
+}
+.icon-fav{
+  @extend %icon, %icon-link;
+}
+
+
+.one {
+  width:100px;
+  height:100px;
+}
+.two {
+  padding:10px;
+}
+.three {
+  @extend .one, .two;
+
+  background:red;
+  border:5px solid #000;
+}
