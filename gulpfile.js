@@ -10,6 +10,11 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
+//雪碧图需要引用
+var csso = require('gulp-csso');
+var imagemin = require('gulp-imagemin');
+var spritesmith = require('gulp.spritesmith');
+
 // 定义一些变量
 var static_sass = './assets/sass/application.css.scss',
     test_files = './assets/test/*.scss',
@@ -25,9 +30,34 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('default'));
 });
 
+
+var sprite_files = './public/icons/*',
+    test_files = './public/test/',
+    sprite_output_path = './public/test/';
+
+// 雪碧图任务 合并icon图标
+gulp.task('sprite', function () {
+  // Generate our spritesheet
+  var spriteData = gulp.src(sprite_files+'/*.png').pipe(spritesmith({
+    imgName: 'icons.png',
+    cssName: '_icons.sass'
+  }));
+
+  // Pipe image stream through image optimizer and onto disk
+  spriteData.img
+    .pipe(imagemin())
+    .pipe(gulp.dest(sprite_output_path+'/images/'));
+
+  // Pipe CSS stream through CSS optimizer and onto disk
+  spriteData.css
+    .pipe(csso())
+    .pipe(gulp.dest(sprite_output_path+'/css/'));
+});
+
 // Sass任务 编译Sass
 gulp.task('sass', function() {
     gulp.src(static_sass)
+        // @style: nested,compact,expanded,compressed
         .pipe(sass({style:'expanded'}))
         //.pipe(sass({sourcemap: true, sourcemapPath: sourcemapPath}))
         .on('error', function (err) { console.log(err.message); })
