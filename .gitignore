@@ -19,3 +19,5 @@ Thumbs.db
 *.log
 .sass-cache/
 assets/css/
+dest/
+src/
