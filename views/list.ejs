@@ -1,0 +1,257 @@
+<style>
+body .hide{display: none !important;}
+._list-box{overflow: auto;}
+.list-stream .item{padding:10px 0;margin:0;border-bottom:1px solid #eee;}
+.list-stream .rank{}
+.list-stream .rank i{display: inline-block;width:50px;font-style: normal;}
+.list-stream .img{float:left;display:inline;width: 3rem;height:3rem;margin:0.4rem 1rem 0 0;background: #ccc;}
+.list-stream .summary{overflow: auto;}
+.bookmark{display: none;}
+.list-stream .img:hover .bookmark{display: block;}
+.list-stream h3{margin:0;}
+.list-stream p{margin:0;}
+ul.inline{margin: 0.5rem 0;padding: 0;}
+ul.inline li {display: inline-block;padding:0 1rem;}
+.taglist .tag{display: inline-block;padding: 0 5px; background: #E0EAF1;}
+.list-stream .gray{color: #999; display: none;}
+.card{display:inline-block;display:none;}
+.card .flip {
+    width:266px;
+    height: 495px;
+    transform-style: preserve-3d
+}
+.card .flip.flipToBack {
+    -webkit-transform: perspective(1280px) rotateY(-180deg);
+    -ms-transform: perspective(1280px) rotateY(-180deg);
+    transform: perspective(1280px) rotateY(-180deg);
+    -webkit-animation-name: flipToBack;
+    -webkit-animation-duration: 500ms;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-delay: 0;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-direction: normal;
+    -webkit-animation-fill-mode: none;
+    -webkit-animation-play-state: running;
+    animation-name: flipToBack;
+    animation-duration: 500ms;
+    animation-timing-function: ease-in-out;
+    animation-delay: 0;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running
+}
+
+.card .flip.flipToFront {
+    -webkit-animation-name: flipToFront;
+    -webkit-animation-duration: 500ms;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-delay: 0;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-direction: normal;
+    -webkit-animation-fill-mode: none;
+    -webkit-animation-play-state: running;
+    animation-name: flipToFront;
+    animation-duration: 500ms;
+    animation-timing-function: ease-in-out;
+    animation-delay: 0;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running
+}
+.card .flip .front {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 495px;
+    background: #91C6F9;
+    transform: rotateY(0deg)
+}
+.card .flip .back {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 495px;
+    background: #91C0F9;
+    transform: rotateY(180deg)
+}
+.card .flip.flipToBack .front{display:none;}
+.card .flip.flipToBack .back {display:block;}
+@-webkit-keyframes flipToBack {
+    from {
+        -webkit-transform: perspective(1280px) rotateY(0)
+    }
+    to {
+        -webkit-transform: perspective(1280px) rotateY(-180deg)
+    }
+}
+
+@keyframes flipToBack {
+    from {
+        transform: perspective(1280px) rotateY(0)
+    }
+
+    to {
+        transform: perspective(1280px) rotateY(-180deg)
+    }
+}
+
+@-webkit-keyframes flipToFront {
+    from {
+        -webkit-transform: perspective(1280px) rotateY(-180deg)
+    }
+
+    to {
+        -webkit-transform: perspective(1280px) rotateY(0)
+    }
+}
+
+@keyframes flipToFront {
+    from {
+        transform: perspective(1280px) rotateY(-180deg)
+    }
+
+    to {
+        transform: perspective(1280px) rotateY(0)
+    }
+}
+#js-fullscreen {
+  display: none;
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  color: #7d8b99;
+  background: rgba(229, 232, 236, 0.5);
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 10px 10px transparent;
+  outline: none;
+  cursor: pointer;
+  transition: box-shadow .35s;
+  z-index: 99;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#js-fullscreen:hover {
+  color: #2eb695;
+  box-shadow: 0 0 0 3px rgba(125, 139, 153, 0.15); 
+}
+@media screen and (max-width: 585px) {
+  #js-fullscreen {
+    width: 50px;
+    height: 50px;
+    top: 0;
+    right: 0;
+    border-radius: 0;
+  } 
+}
+
+#icon-arrow {
+  padding: 10px;
+  transform: rotate(0deg);
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  display: block; }
+#icon-arrow:before {
+  content: "\e801";
+  margin-left: -1px;
+  font-size: 20px;
+  line-height: 1;
+}
+#icon-arrow.fullscreen {
+  transform: rotate(180deg); 
+}
+@media screen and (max-width: 585px) {
+  #icon-arrow {
+    padding: 15px;
+  }
+}
+._sidebar{transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);}
+</style>
+<button id="js-fullscreen"><span id="icon-arrow" class="fontello"></span></button>
+<div class="_list-box">
+    <ul class="nav inline">
+        <li class="active"><a href="/list">推荐的</a></li>
+        <li><a href="/list/hottest">热门的</a></li>
+        <li><a href="/list/newest">全部的</a></li>
+    </ul>
+    <div class="card">
+        <div class="flip flipToFront">
+            <div class="back"></div>
+            <div class="front"></div>
+        </div>
+    </div>
+    <div class="list-stream">
+        <section class="item">
+            <div class="img"><span class="bookmark favioited">收藏</span></div>
+            <div class="summary">
+                <h3><a href="#">Amaze UI <small>presenter</small></a></h3>
+                <p>Amaze UI 是一个移动优先的跨屏前端框架。</p>
+                <div class="info">
+                    <span class="rank" title="这里改为伪类实现icon图标+数字">
+                        <i class="views" title="浏览量">2345</i>
+                        <i class="votes">赞</i>
+                        <i class="share">分享</i>
+                    </span>
+                    <span class="taglist ib">
+                        <a href="#" class="tag tag-sm">javascript</a>
+                        <a href="#" class="tag tag-sm">编程</a>
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section class="item">
+            <div class="img"><span class="bookmark favioited">收藏</span></div>
+            <div class="summary">
+                <p class="gray">人面桃花 16分钟前分享</p>
+                <h3><a href="#">Amaze UI <small>presenter</small></a></h3>
+                <p>Amaze UI 是一个移动优先的跨屏前端框架。</p>
+                <div class="info">
+                    <span class="rank" title="这里改为伪类实现icon图标+数字">
+                        <i class="views" title="浏览量">2345</i>
+                        <i class="votes">赞</i>
+                    </span>
+                    <span class="taglist ib">
+                        <a href="#" class="tag tag-sm">javascript</a>
+                        <a href="#" class="tag tag-sm">编程</a>
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section class="item">
+            <div class="img"><span class="bookmark favioited">收藏</span></div>
+            <div class="summary">
+                <h3><a href="#">Amaze UI <small>presenter</small></a></h3>
+                <p>Amaze UI 是一个移动优先的跨屏前端框架。</p>
+                <div class="info">
+                    <span class="rank" title="这里改为伪类实现icon图标+数字">
+                        <i class="views" title="浏览量">2345</i>
+                        <i class="votes">赞</i>
+                    </span>
+                    <span class="taglist ib">
+                        <a href="#" class="tag tag-sm">javascript</a>
+                        <a href="#" class="tag tag-sm">编程</a>
+                    </span>
+                </div>
+            </div>
+        </section>
+    </div> <!-- //.list-stream -->
+      
+
+    <div class="text-center">
+        <ul class="pager">
+            <li>以上是部分更新，你还可以查看</li>
+            <li><a href="/list/newest">全部问题</a></li>
+            <li>或者</li>
+            <li><a href="/list/hottest">热门问题</a></li>
+            <li>列表</li>
+        </ul>
+    </div>
+</div>
