@@ -41,12 +41,10 @@ define(function(require, exports, module) {
 			var self = this;
 			this.root.delegate("a","click", function(e){
 				e.preventDefault();
-				return;
-				// var href = $(e.target).attr("href");
-				// if(href){
-				// 	//self.forward(href);
-				// 	//self.viewChange(href);
-				// }
+				 var href = $(e.target).attr("href");
+				 if(href){
+				 	self.fire("changeView", href);
+				 }
 			});
 		},
 		registerEvent: function(){
@@ -60,9 +58,15 @@ define(function(require, exports, module) {
 			this.on("ClassChange", function(newClass){
 				self.sideBarView.fire("ClassChange", newClass);
 			});
+
+			this.on("changeView", function(url){
+				self.sideBarView.fire("changeView", url);
+				self.viewChange(url);
+			});
 		},
 		viewChange: function(href){
 			var path = href || location.pathname;
+			this.forward(href);
 			this.parser.decode(path, "path");
 			this.updateView();
 		},

@@ -161,11 +161,11 @@ gulp.task('watch', function() {
   // 看守所有.scss档
   gulp.watch(src_path + 'styles/**/*.scss', ['styles']);
 
-  // 看守所有.js档
-  gulp.watch(src_path + 'js/**/*.js', ['scripts']);
-
   // 看守所有图片档
   gulp.watch(src_path + 'images/**/*', ['images']);
+
+  //watch js
+  gulp.watch("./src/js/**/*", ['jsdev']);
 
   // 建立即时重整伺服器
   var server = livereload();

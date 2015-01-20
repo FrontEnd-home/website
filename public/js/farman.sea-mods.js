@@ -614,17 +614,6 @@ define("dir",["events"],function(require,exports,module){
 			var arrowQuery = "a._icon-" + this.dirName + " ._list-arrow";
 			var dirTitle = "a._icon-" + this.dirName;
 
-			// this.$el.delegate(arrowQuery, "click", function(e){
-			// 	var title = $(this).parent();
-			// 	if(title.hasClass("open")){
-			// 		title.removeClass("open");
-			// 		self.fire("closeDir");
-			// 	} else{
-			// 		title.addClass("open");
-			// 		self.fire("openDir");
-			// 	}
-			// });
-
 			this.$el.delegate(dirTitle, "click", function(e){
 				var target = $(e.target);
 				if(target.hasClass("_list-arrow")){
@@ -828,12 +817,10 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 			var self = this;
 			this.root.delegate("a","click", function(e){
 				e.preventDefault();
-				return;
-				// var href = $(e.target).attr("href");
-				// if(href){
-				// 	//self.forward(href);
-				// 	//self.viewChange(href);
-				// }
+				 var href = $(e.target).attr("href");
+				 if(href){
+				 	self.fire("changeView", href);
+				 }
 			});
 		},
 		registerEvent: function(){
@@ -847,9 +834,15 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 			this.on("ClassChange", function(newClass){
 				self.sideBarView.fire("ClassChange", newClass);
 			});
+
+			this.on("changeView", function(url){
+				self.sideBarView.fire("changeView", url);
+				self.viewChange(url);
+			});
 		},
 		viewChange: function(href){
 			var path = href || location.pathname;
+			this.forward(href);
 			this.parser.decode(path, "path");
 			this.updateView();
 		},
