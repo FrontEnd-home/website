@@ -612,15 +612,35 @@ define("dir",["events"],function(require,exports,module){
 		bindEvent: function(e){
 			var self = this;
 			var arrowQuery = "a._icon-" + this.dirName + " ._list-arrow";
+			var dirTitle = "a._icon-" + this.dirName;
 
-			this.$el.delegate(arrowQuery, "click", function(e){
-				var title = $(this).parent();
-				if(title.hasClass("open")){
-					title.removeClass("open");
-					self.fire("closeDir");
+			// this.$el.delegate(arrowQuery, "click", function(e){
+			// 	var title = $(this).parent();
+			// 	if(title.hasClass("open")){
+			// 		title.removeClass("open");
+			// 		self.fire("closeDir");
+			// 	} else{
+			// 		title.addClass("open");
+			// 		self.fire("openDir");
+			// 	}
+			// });
+
+			this.$el.delegate(dirTitle, "click", function(e){
+				var target = $(e.target);
+				if(target.hasClass("_list-arrow")){
+					var title = target.parent();
+					if(title.hasClass("open")){
+						title.removeClass("open");
+						self.fire("closeDir");
+					} else{
+						title.addClass("open");
+						self.fire("openDir");
+					}
 				} else{
-					title.addClass("open");
-					self.fire("openDir");
+					if(!$(this).hasClass("open")){
+						$(this).addClass("open");
+						self.fire("openDir");
+					}
 				}
 			});
 
