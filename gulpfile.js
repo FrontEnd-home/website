@@ -247,7 +247,7 @@ gulp.task('jsdev',['js-sea-dev','js-page-dev'], function() {
     .pipe(gulp.dest(output.dir));
 });
 
-gulp.task('jsonline',['js-dev'], function() {
+gulp.task('jsonline',['jsdev'], function() {
   var src = [
     [output.dir, output.main].join("/"),
   ];
