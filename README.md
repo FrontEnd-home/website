@@ -25,3 +25,7 @@ devguide
 |- vendor        //外部工具
 |- README.md
 ```
+
+
+####脚本运行
+源代码处于src/js内部，直接输出到public/js中，修改好js执行 `gulp jsdev` 命令
