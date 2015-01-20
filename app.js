@@ -13,11 +13,8 @@ var routerController = require('./routes/controller').controller;
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-<<<<<<< HEAD
 //app.engine('jade', require('jade').__express);
-=======
-
->>>>>>> pages
+//
 //@see https://www.npmjs.com/package/morgan 日志格式参考这里format.
 //app.use(morgan('HTTP/:http-version :method :status :url :response-time ms :date :user-agent :referrer'));
 
@@ -29,17 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-<<<<<<< HEAD
-app.get(/^\/(index|home)?$/, routerController.index);
-app.get(/^\/count$/, routerController.count);
-app.all(/^\/ajax\/list$/, routerController.ajaxlist);
-=======
 app.get("*", routerController.index);
-//app.get(/^\/count$/, routerController.count);
-//app.all(/^\/ajax\/list$/, routerController.ajaxlist);
->>>>>>> pages
-//app.get(/^\/add/, routerController.add);
-//app.get(/^\/\w+(\/)?(\w+)?$/, routerController.list);
 //routes(app);
 // app.use('/', routes);
 // app.use('/users', users);
