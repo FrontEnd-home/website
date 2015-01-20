@@ -20,4 +20,4 @@ Thumbs.db
 .sass-cache/
 assets/css/
 dest/
-src/
+dev/
