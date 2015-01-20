@@ -9,6 +9,7 @@ var gulp = require('gulp');
 var sass = require('gulp-ruby-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     minifycss = require('gulp-minify-css'),
+    transport = require("gulp-seajs-transport"),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     gulpif = require('gulp-if'),
@@ -27,8 +28,6 @@ var sass = require('gulp-ruby-sass'),
 // var imagemin = require('gulp-imagemin');
 // var spritesmith = require('gulp.spritesmith');
 
-
-// gulp  dev/build
 var env = '',
     src_path = './src/',    //源码路径
     out_path = './dest/';   //打包路径
@@ -48,16 +47,9 @@ var static_sass = './assets/sass/application.scss',
     sourcemapPath = './assets/css',
     css_file = './assets/css';
 
-// Lint任务 检查脚本
-gulp.task('lint', function() {
-    gulp.src(src_path + 'js/*.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'));
-});
-
 // 清除任务 部署前清除目标文件
 gulp.task('clean', function() {
-  return gulp.src([(out_path+'css/'), (out_path+'js/'), (out_path+'img/')], {read: false})
+  return gulp.src([(out_path+'css/'), (out_path+'img/')], {read: false})
     .pipe(clean());
 });
 
@@ -153,27 +145,6 @@ gulp.task('styles', function() {
     .pipe(notify({ message: 'Styles task complete' }));
 });
 
-// Scripts 任务 合并，压缩文件
-// gulp.task('scripts', function() {
-//     gulp.src(src_path + 'js/*.js')
-//         .pipe(concat('all.js'))
-//         .pipe(gulp.dest('./dist'))
-//         .pipe(rename('all.min.js'))
-//         .pipe(uglify())
-//         .pipe(gulp.dest('./dist'));
-// });
-gulp.task('scripts', function() {
-  gulp.src(src_path + 'js/**/*.js')
-    //.pipe(jshint('.jshintrc'))
-    //.pipe(jshint.reporter('default'))
-    .pipe(concat('all.js'))
-    .pipe(gulp.dest(out_path + 'js/'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(uglify())
-    .pipe(gulp.dest(out_path + 'js/'))
-    .pipe(notify({ message: 'Scripts task complete' }));
-});
-
 // 预设任务
 gulp.task('default', ['clean'], function() {
   gulp.start('styles');
@@ -204,4 +175,84 @@ gulp.task('watch', function() {
     server.changed(file.path);
   });
 
+});
+
+//js相关的任务
+var paths = {
+    libs: [
+        "src/js/libs/underscore.js",
+        "src/js/libs/zepto.js",
+        "src/js/libs/sea-debug.js",
+        "src/js/libs/class.js"
+    ],
+    seajs: [
+        "src/js/common/*",
+        "src/js/core/*",
+        "src/js/page/*",
+        "src/js/app.js"    
+    ],
+    page:[
+        "src/js/mods/routes.js",
+        "src/js/mods/common/*",
+        "src/js/mods/page/*"
+    ]
+};
+var output = {
+    dir: "public/js",
+    libs:"farman.libs.js",
+    seajs:"farman.sea-mods.js",
+    pagejs:"farman.page.js",
+    main: "farman.js",
+    mainmin: "farman.min.js"
+};
+
+gulp.task('js-clean', [], function(cb){
+  return gulp.src(output.dir, {read: false})
+    .pipe(clean());
+});
+
+gulp.task('jshint',['js-clean'], function() {
+  return gulp.src(paths.seajs)
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+
+gulp.task('js-libs-dev',['js-clean'], function() {
+  return gulp.src(paths.libs)
+    .pipe(concat(output.libs))
+    .pipe(gulp.dest(output.dir));
+});
+
+gulp.task('js-sea-dev',['js-libs-dev'], function() {
+  return gulp.src(paths.seajs)
+    .pipe(transport())
+    .pipe(concat(output.seajs))
+    .pipe(gulp.dest(output.dir));
+});
+
+gulp.task('js-page-dev', ['js-clean'], function() {
+  return gulp.src(paths.page)
+    .pipe(transport())
+    .pipe(concat(output.pagejs))
+    .pipe(gulp.dest(output.dir));
+});
+
+gulp.task('jsdev',['js-sea-dev','js-page-dev'], function() {
+  var src = [
+    [output.dir, output.libs].join("/"),
+    [output.dir, output.seajs].join("/")
+  ];
+  return gulp.src(src)
+    .pipe(concat(output.main))
+    .pipe(gulp.dest(output.dir));
+});
+
+gulp.task('jsonline',['js-dev'], function() {
+  var src = [
+    [output.dir, output.main].join("/"),
+  ];
+  return gulp.src(src)
+    .pipe(uglify())
+    .pipe(concat(output.mainmin))
+    .pipe(gulp.dest(output.dir));
 });

@@ -15,7 +15,20 @@
 <body class="_booting _noscript">
 <noscript class="_fail">Developer's Guide requires JavaScript to run.</noscript>
 <%- include app %>
-<script src="/js/vendor/zepto.min.js"></script>
-<script src="/js/guide.js"></script>
+<script type="text/javascript">
+  var sideBarData = <%-JSON.stringify(list, null, 4)%>;
+</script>
+<script src="/js/farman.libs.js"></script>
+<script src="/js/farman.sea-mods.js"></script>
+<script src="/js/farman.page.js"></script>
+<script type="text/javascript">
+  seajs.use(["app","routes"], function(App, routes){
+    var appInstance = App.newInstance([routes], "index");
+
+    appInstance.fire("start");
+    appInstance.hideLoading();
+    this.Farman = appInstance;
+  });
+</script>
 </body>
 </html>

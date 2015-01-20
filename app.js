@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get(/^\/(index|home)?$/, routerController.index);
+app.get("*", routerController.index);
 //app.get(/^\/count$/, routerController.count);
 //app.all(/^\/ajax\/list$/, routerController.ajaxlist);
 //app.get(/^\/add/, routerController.add);
