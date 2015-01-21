@@ -66,6 +66,11 @@ define(function(require, exports, module) {
 		},
 		viewChange: function(href){
 			var path = href || location.pathname;
+			//如果相同的path就ruturn.
+			if(path == this.currentPath){
+				return;
+			}
+			this.currentPath = path;
 			this.forward(href);
 			this.parser.decode(path, "path");
 			this.updateView();
