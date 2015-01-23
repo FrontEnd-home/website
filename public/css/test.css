@@ -54,7 +54,7 @@
   font-weight: normal;
   width: 3rem;
   height: 3rem;
-  background: #ededed;
+  background: #f9f9f9;
   text-align: center;
 }
 .list-stream dt img {
@@ -76,7 +76,7 @@
 
 .list-stream .summary p {
   margin: 3px 0;
-  color: #666;
+  color: #888;
 }
 .list-stream .summary {
   overflow: auto;
@@ -93,15 +93,15 @@
 .list-stream dt:hover .votes {
   display: block;
 }
-.list-stream h3 {
+.list-stream .link-tit {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 .list-stream .gray {
   color: #999;
   display: none;
 }
-.link-tit a{color:#333;}
+.link-tit a{/*color:#333;*/}
 .link-tit a:hover{color:#0082c6;}
 .link-tit img.favicon{width: 16px;height: 16px;position: relative;top: 2px;}
 
@@ -123,9 +123,10 @@
 .tag {
   display: inline-block;
   padding: 0 8px;
-  background-color: #eff6fa;
   height: 24px;
   line-height: 24px;
+  color: #888;
+  background-color: #f9f9f9;
   font-weight: normal;
   font-size: 13px;
   text-align: center;
@@ -163,7 +164,16 @@
 .tag[href]:hover :before, .tag[href]:focus :before {
   border-right-color: #259;
 }
-
-.taglist .tag {
+.post-tags {
+  color: #999;
+  font-size: 12px;
+}
+.post-tags .tag {
   margin-right: 6px;
+}
+.post-tags a[rel="tag"]{
+  color: #999;
+  display: inline-block;
+  padding: 0 3px;
+  text-decoration: underline;
 }
