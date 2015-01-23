@@ -37,11 +37,11 @@ switch(process.argv[3]){
 }
 
 if(env != 'build'){
-  out_path = './dev/';
+  out_path = './public/';
 }
 
 // 定义一些变量
-var static_sass = './assets/sass/application.scss',
+var static_sass = './sass/app.scss',
     test_files = './assets/test/*.scss',
     sass_files = './assets/sass/*.scss',
     sourcemapPath = './assets/css',
