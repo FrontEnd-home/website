@@ -31,6 +31,7 @@ define(function(require, exports, module) {
 			var self = this;
 			this.on("start", function(){
 				self.obServer();
+				self.hideLoading();
 			});
 			this.on("appEventListaner", function(){
 				self.registerEvent();
@@ -39,12 +40,17 @@ define(function(require, exports, module) {
 		obServer: function(){
 			this.fire("appEventListaner");
 			var self = this;
-			this.root.delegate("a","click", function(e){
+			this.$el.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
 				 	self.fire("changeView", href);
 				 }
+			});
+
+			$(window).on("popstate", function(){
+				var pathname = location.pathname;
+				self.fire("changeView", pathname);
 			});
 		},
 		registerEvent: function(){
@@ -66,10 +72,6 @@ define(function(require, exports, module) {
 		},
 		viewChange: function(href){
 			var path = href || location.pathname;
-			//如果相同的path就ruturn.
-			if(path == this.currentPath){
-				return;
-			}
 			this.currentPath = path;
 			this.forward(href);
 			this.parser.decode(path, "path");

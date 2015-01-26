@@ -7,8 +7,8 @@ define(function(require, exports, module) {
 			name: "list",
 			match: /^\/list\/[\s\S]+/i
 		}, {
-			name: "tagged",
-			match: /^\/tagged\/[\s\S]+/i
+			name: "tags",
+			match: /^\/tags\/[\s\S]+/i
 		}, {
 			name: "search",
 			match: /^\/q\/[\s\S]+/i

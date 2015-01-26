@@ -8,27 +8,27 @@ define(function(require, exports, module) {
 
 	var Observer = Class.extend({
 		init: function() {
-			this.__observer = [];
+			this.observers = [];
 		},
 		add: function(observer){
-			this.__observer.push( observer );
+			this.observers.push( observer );
 		},
 		empty: function(){
-			this.__observer = [];
+			this.observers = [];
 		},
 		get: function(index){
-			if(index > -1 && index < this.__observer.length){
-				return this.__observer[index];
+			if(index > -1 && index < this.observers.length){
+				return this.observers[index];
 			}
 		},
 		count: function(){
-			return this.__observer.length;
+			return this.observers.length;
 		},
 		indexOf: function(observer, startIndex){
 			var index = -1, 
 				i = startIndex || 0;
-			while(i < this.__observer.length){
-				if(this.__observer[i] == observer){
+			while(i < this.observers.length){
+				if(this.observers[i] == observer){
 					index = i;
 				}
 				i++;
@@ -37,20 +37,14 @@ define(function(require, exports, module) {
 		},
 		removeAtIndex: function(index){
 			if(index == 0){
-				this.__observer.shift();
-			} else if( index == this.__observer.length - 1){
-				this.__observer.pop();
+				this.observers.shift();
+			} else if( index == this.observers.length - 1){
+				this.observers.pop();
 			} else{
-				if(this.__observer.length <= 1){
+				if(this.observers.length <= 1){
 					this.empty();
 				}else{
-					var _temp = [];
-					for(var i = 0; i< this.count();i++){
-						if(i != index){
-							_temp.push( this.__observer[i] );
-						}
-					}
-					this.__observer = _temp;
+					this.observers.splice(index, 1);
 				}
 			}
 		}

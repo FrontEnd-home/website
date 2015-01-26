@@ -10,6 +10,7 @@ var sass = require('gulp-ruby-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     minifycss = require('gulp-minify-css'),
     transport = require("gulp-seajs-transport"),
+    transportText = require("./transport-text"),
     jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     gulpif = require('gulp-if'),
@@ -181,8 +182,9 @@ gulp.task('watch', function() {
 var paths = {
     libs: [
         "src/js/libs/underscore.js",
-        "src/js/libs/zepto.js",
         "src/js/libs/sea-debug.js",
+        "src/js/libs/sea-text.js",
+        "src/js/libs/zepto.js",
         "src/js/libs/class.js"
     ],
     seajs: [
@@ -195,6 +197,9 @@ var paths = {
         "src/js/mods/routes.js",
         "src/js/mods/common/*",
         "src/js/mods/page/*"
+    ],
+    tpl: [
+        "src/js/mods/tpl/*"
     ]
 };
 var output = {
@@ -202,6 +207,7 @@ var output = {
     libs:"farman.libs.js",
     seajs:"farman.sea-mods.js",
     pagejs:"farman.page.js",
+    pagetpl:"farman.tpl.js",
     main: "farman.js",
     mainmin: "farman.min.js"
 };
@@ -230,14 +236,21 @@ gulp.task('js-sea-dev',['js-libs-dev'], function() {
     .pipe(gulp.dest(output.dir));
 });
 
-gulp.task('js-page-dev', ['js-clean'], function() {
-  return gulp.src(paths.page)
+gulp.task('js-page', ['js-page-tpl'], function() {
+     gulp.src(paths.page)
     .pipe(transport())
     .pipe(concat(output.pagejs))
     .pipe(gulp.dest(output.dir));
 });
 
-gulp.task('jsdev',['js-sea-dev','js-page-dev'], function() {
+gulp.task('js-page-tpl', [], function(){
+  return gulp.src(paths.tpl)
+   .pipe(transportText())
+   .pipe(concat(output.pagetpl))
+   .pipe(gulp.dest(output.dir));
+});
+
+gulp.task('jsdev',['js-sea-dev','js-page'], function() {
   var src = [
     [output.dir, output.libs].join("/"),
     [output.dir, output.seajs].join("/")

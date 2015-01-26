@@ -496,11 +496,21 @@ define("storage",[],function(require,exports,module){
  * @date 2015/01/09
  * @author farman(yuhongfei1001@163.com)
  */
-define("events",[],function(require,exports,module){
+define("events",["observer"],function(require,exports,module){
+
+	var Observer = require("observer");
 
 	var Events = Class.extend({
 		init: function() {
+			this.__observers = Observer.newInstance();
+
 			this.__listeners = {};
+		},
+		addObserver: function( observer ){
+			this.__observers.push( observer );
+		},
+		removeObserver: function( observer ){
+			this.__observers.removeAtIndex( this.__observers.indexOf(observer, 0) );
 		},
 		on: function(name, handler) {
 			if (this.__listeners[name] && this.__listeners[name].length) {
@@ -521,9 +531,70 @@ define("events",[],function(require,exports,module){
 					handler.call(null, data);
 				});
 			}
+			//底层事件自动冒泡到监视者.
+			var count = this.__observers.count();
+			for(var i = 0;i < count; i ++){
+				var observer = this.__observers.get(i);
+				if(observer && observer.fire){ 
+					observer.fire(name, data);
+				}
+			}
 		}
 	});
 	module.exports = Events;
+});
+/**
+ * @class observer
+ * @desc 监视者基类, 用于事件派发.
+ * @date 2015/01/20
+ * @author farman(yuhongfei1001@163.com)
+ */
+define("observer",[],function(require,exports,module){
+
+	var Observer = Class.extend({
+		init: function() {
+			this.observers = [];
+		},
+		add: function(observer){
+			this.observers.push( observer );
+		},
+		empty: function(){
+			this.observers = [];
+		},
+		get: function(index){
+			if(index > -1 && index < this.observers.length){
+				return this.observers[index];
+			}
+		},
+		count: function(){
+			return this.observers.length;
+		},
+		indexOf: function(observer, startIndex){
+			var index = -1, 
+				i = startIndex || 0;
+			while(i < this.observers.length){
+				if(this.observers[i] == observer){
+					index = i;
+				}
+				i++;
+			}
+			return index;
+		},
+		removeAtIndex: function(index){
+			if(index == 0){
+				this.observers.shift();
+			} else if( index == this.observers.length - 1){
+				this.observers.pop();
+			} else{
+				if(this.observers.length <= 1){
+					this.empty();
+				}else{
+					this.observers.splice(index, 1);
+				}
+			}
+		}
+	});
+	module.exports = Observer;
 });
 /**
  * @class parser
@@ -807,6 +878,7 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 			var self = this;
 			this.on("start", function(){
 				self.obServer();
+				self.hideLoading();
 			});
 			this.on("appEventListaner", function(){
 				self.registerEvent();
@@ -815,12 +887,17 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 		obServer: function(){
 			this.fire("appEventListaner");
 			var self = this;
-			this.root.delegate("a","click", function(e){
+			this.$el.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
 				 	self.fire("changeView", href);
 				 }
+			});
+
+			$(window).on("popstate", function(){
+				var pathname = location.pathname;
+				self.fire("changeView", pathname);
 			});
 		},
 		registerEvent: function(){
@@ -842,6 +919,7 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 		},
 		viewChange: function(href){
 			var path = href || location.pathname;
+			this.currentPath = path;
 			this.forward(href);
 			this.parser.decode(path, "path");
 			this.updateView();

@@ -18,12 +18,12 @@
 <script src="/js/farman.libs.js"></script>
 <script src="/js/farman.sea-mods.js"></script>
 <script src="/js/farman.page.js"></script>
+<script src="/js/farman.tpl.js"></script>
 <script type="text/javascript">
   seajs.use(["app","routes"], function(App, routes){
     var appInstance = App.newInstance([routes], "index");
 
     appInstance.fire("start");
-    appInstance.hideLoading();
     this.Farman = appInstance;
   });
 </script>

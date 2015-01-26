@@ -7,8 +7,8 @@ define("routes",[],function(require,exports,module){
 			name: "list",
 			match: /^\/list\/[\s\S]+/i
 		}, {
-			name: "tagged",
-			match: /^\/tagged\/[\s\S]+/i
+			name: "tags",
+			match: /^\/tags\/[\s\S]+/i
 		}, {
 			name: "search",
 			match: /^\/q\/[\s\S]+/i
@@ -71,16 +71,16 @@ define("golbal_objects",["view"],function(require,exports,module){
 
 	module.exports = listController;
 });
-define("index",["view"],function(require,exports,module){
+define("index",["view","text!index"],function(require,exports,module){
 	var View = require("view");
+	var html = require("text!index");
 
 	var listController = View.extend({
 		init: function(){
 			this._super();
 
-			// this.$el.html("index<div id='xx'>xxxxxx</div>");
-			// this.$el.css("border","1px solid #000");
-
+			this.$el.html(html);
+			
 			var self = this;
 			this.on("OpenPage", function(page){
 				self.$el.append(page+"<br/>");
@@ -88,16 +88,12 @@ define("index",["view"],function(require,exports,module){
 			this.on("OpenClass", function(src){
 				self.$el.append(src+"<br/>");
 			});
-
 		},
 		events:{
-			"click #xx":"showMe"
-		},
-		showMe: function(){
-			//this.parent.fire("ClassChange", 222);
+			
 		},
 		onShow: function(){
-			this._super();
+
 			console.log("index.show!");
 		},
 		onHide: function(){
@@ -144,20 +140,27 @@ define("search",["view"],function(require,exports,module){
 
 	module.exports = listController;
 });
-define("tagged",["view"],function(require,exports,module){
+define("tags",["view","text!tags"],function(require,exports,module){
 	var View = require("view");
+	var tpl = require("text!tags");
 
 	var listController = View.extend({
 		init: function(){
 			this._super();
-
-			this.$el.html("tagged");
+		},
+		render: function(){
+			var tagName = location.pathname.replace("/tags/", "");
+			var html = _.template(tpl)({
+				tagName : tagName
+			});
+			this.$el.html(html);
 		},
 		onShow: function(){
-			console.log("tagged.show!");
+			this.render();
+			console.log("tags.show!");
 		},
 		onHide: function(){
-			console.log("tagged.hide!");
+			console.log("tags.hide!");
 		}
 	});
 
