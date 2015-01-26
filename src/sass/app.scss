@@ -28,6 +28,28 @@
         'components/prism',
         'components/mobile';
 
+// BS Core variables and mixins
+@import "bootstrap/variables",
+        "bootstrap/mixins";
+
+// BS Reset and dependencies
+//@import "bootstrap/normalize";
+//@import "bootstrap/print";
+
+// BS Core CSS
+//@import "bootstrap/scaffolding",
+//        "bootstrap/type";
+
+// BS Components
+@import 'bootstrap/navs',
+//        "bootstrap/pagination",
+//        "bootstrap/pager",
+        "bootstrap/labels",
+        "bootstrap/badges";
+
+//@import 'page/list-fav';
+
+/*
 @import 'pages/angular',
         'pages/bower',
         'pages/c',
@@ -70,3 +92,4 @@
         'pages/underscore',
         'pages/yard',
         'pages/yii';
+*/
