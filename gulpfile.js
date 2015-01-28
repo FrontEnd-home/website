@@ -236,7 +236,7 @@ gulp.task('js-sea-dev',['js-libs-dev'], function() {
 });
 
 gulp.task('js-page', ['js-page-tpl'], function() {
-     gulp.src(paths.page)
+  return gulp.src(paths.page)
     .pipe(transport())
     .pipe(concat(output.pagejs))
     .pipe(gulp.dest(output.dir));

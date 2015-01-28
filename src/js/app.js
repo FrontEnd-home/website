@@ -94,6 +94,7 @@ define(function(require, exports, module) {
 					this.views[view] = this.currentView;
 					this.viewList.push(this.currentView);
 				}catch(e){
+					console.log(view);
 					console.error("have no this view!");
 				}
 			}

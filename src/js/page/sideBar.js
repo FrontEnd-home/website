@@ -14,6 +14,7 @@ define(function(require, exports, module) {
 
 			var self = this;
 			this.dirs = [];
+			this.active = null;
 			this.parent = parent;
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
@@ -22,6 +23,13 @@ define(function(require, exports, module) {
 			});
 
 			this.on("OpenPage", function(){
+			});
+
+			this.on("activeItem", function(item){
+				if(self.active){
+					self.active.removeClass("active");
+				} 
+				self.active = item.addClass("active");
 			});
 		},
 		render: function(data){

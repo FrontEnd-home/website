@@ -2,7 +2,7 @@ define(function(require, exports, module){
 	var View = require("view");
 	var html = require("text!index");
 
-	var listController = View.extend({
+	var viewController = View.extend({
 		init: function(){
 			this._super();
 
@@ -28,5 +28,5 @@ define(function(require, exports, module){
 		}
 	});
 
-	module.exports = listController;
+	module.exports = viewController;
 });

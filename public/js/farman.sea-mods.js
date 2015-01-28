@@ -681,65 +681,61 @@ define("dir",["events"],function(require,exports,module){
 			this._super();
 
 			this.$el = $("<a></a>");
+			this.dirs = [];
 			this.dirName = data.enname;
 			this.dirData = data;
 			this.render(data);
 			this.bindEvent();
 		},
-		renderTitle: function(){
-			var titleTpl = '<span class="_list-arrow"></span><%=name%>';
+		renderBody: function(){
+			var subData = this.dirData.sublist;
+			if(!subData) return;
+			var self = this;
+			this.subDir = $("<div class='_list _list-sub'></div>");
+			subData.forEach(function(item){
+				var dirInstance = Dir.newInstance([item]);
+				dirInstance.parent = self;
+				dirInstance.addObserver(self);
+				self.dirs.push(dirInstance);
+				self.subDir.append( dirInstance.$el );
+				
+			});
+			this.subDir.insertAfter(this.$el);
+		},
+		render: function(data){
+			this.$el.addClass("_list-item").addClass("_icon-" + this.dirName).attr("href","/" + this.dirName);
+			var titleTpl = "";
+			if(this.dirData.sublist){
+				this.$el.addClass("_list-dir");
+				titleTpl += '<span class="_list-arrow"></span>';
+			}
+			titleTpl += '<span class="_list-count"><%=quality%></span><%=name%>';
 			var render = _.template(titleTpl);
 			var html = render(this.dirData);
 			this.$el.append(html);
 		},
-		renderBody: function(){
-			var enname = this.dirData.enname;
-			var subData = this.dirData.sublist;
-			var self = this;
-			this.subDir = $("<div class='_list _list-sub'></div>");
-			var bodyTpl = [
-				'<%subData.forEach(function(v){%>',
-				'<a href="/<%=parent%>/<%=v.enname%>" class="_list-item _icon-<%=v.enname%> <%if(v.sublist){%>_list-dir<%}%>" data-slug="<%=v.enname%>">',
-					'<%if(v.sublist){%><span class="_list-arrow"></span><%}%>',
-					'<span class="_list-count"><%=v.quality%></span>',
-					'<%=v.name%>',
-				'</a>',
-				'<%})%>'
-			].join("");
-			var render = _.template(bodyTpl);
-			var html = render({
-				subData: subData,
-				parent : enname
-			});
-			this.subDir.append(html);
-			this.subDir.insertAfter(this.$el);
-
-			// this.subDir.on("click", function(e){
-			// 	if($(this).hasClass("open")){
-			// 		$(this).removeClass("open");
-			// 		self.trigger("closeDir");
-			// 	} else{
-			// 		$(this).addClass("open");
-			// 		self.trigger("openDir");
-			// 	}
-			// });
-		},
-		render: function(data){
-			this.$el.addClass("_list-item").addClass("_icon-" + this.dirName).attr("href","/" + this.dirName);
-			if(this.dirData.sublist){
-				this.$el.addClass("_list-dir");
-			}
-			this.renderTitle();
-		},
 		bindEvent: function(e){
 			var self = this;
 			this.$el.on("click", function(e){
-				if(!$(this).hasClass("open")){
-					$(this).addClass("open");
-					self.trigger("openDir");
+				var target = $(e.target);
+				if(target.hasClass("_list-arrow")){
+					var title = target.parent();
+					if(title.hasClass("open")){
+						title.removeClass("open");
+						self.trigger("closeDir");
+					} else{
+						title.addClass("open");
+						self.trigger("openDir");
+					}
 				} else{
-					$(this).removeClass("open");
-					self.trigger("closeDir");
+					if(!$(this).hasClass("open")){
+						$(this).addClass("open");
+						self.trigger("openDir");
+					}
+
+					if(!$(this).hasClass("active")){
+						self.trigger("activeItem", $(this));
+					}
 				}
 			});
 
@@ -776,6 +772,7 @@ define("sideBar",["events","dir"],function(require,exports,module){
 
 			var self = this;
 			this.dirs = [];
+			this.active = null;
 			this.parent = parent;
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
@@ -784,6 +781,13 @@ define("sideBar",["events","dir"],function(require,exports,module){
 			});
 
 			this.on("OpenPage", function(){
+			});
+
+			this.on("activeItem", function(item){
+				if(self.active){
+					self.active.removeClass("active");
+				} 
+				self.active = item.addClass("active");
 			});
 		},
 		render: function(data){
