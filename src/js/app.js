@@ -33,40 +33,36 @@ define(function(require, exports, module) {
 				self.obServer();
 				self.hideLoading();
 			});
-			this.on("appEventListaner", function(){
-				self.registerEvent();
-			});
 		},
 		obServer: function(){
-			this.fire("appEventListaner");
+			this.registerEvent();
 			var self = this;
 			this.$el.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
-				 	self.fire("changeView", href);
+				 	self.trigger("changeView", href);
 				 }
 			});
 
 			$(window).on("popstate", function(){
 				var pathname = location.pathname;
-				self.fire("changeView", pathname);
+				self.trigger("changeView", pathname);
 			});
 		},
 		registerEvent: function(){
 			var self = this;
 			this.on("OpenClass", function(data){
-				self.currentView.fire("OpenClass",data);
+				self.currentView.trigger("OpenClass",data);
 			});
 			this.on("OpenPage", function(data){
-				self.currentView.fire("OpenPage",data);
+				self.currentView.trigger("OpenPage",data);
 			});
 			this.on("ClassChange", function(newClass){
-				self.sideBarView.fire("ClassChange", newClass);
+				self.sideBarView.trigger("ClassChange", newClass);
 			});
-
 			this.on("changeView", function(url){
-				self.sideBarView.fire("changeView", url);
+				self.sideBarView.trigger("changeView", url);
 				self.viewChange(url);
 			});
 		},
@@ -86,13 +82,14 @@ define(function(require, exports, module) {
 				console.error("have no this page!, please check routes!");
 				return;
 			}
-			this.currentView.fire("hide");
+			this.currentView.trigger("hide");
 			if(this.views[view]){
 				this.currentView = this.views[view];
 			} else{
 				try{
 					this.currentView = require(view).newInstance();
 					this.currentView.parent = this;
+					this.currentView.addObserver(this);
 					this.viewsContainer.append( this.currentView.$el );
 					this.views[view] = this.currentView;
 					this.viewList.push(this.currentView);
@@ -100,7 +97,7 @@ define(function(require, exports, module) {
 					console.error("have no this view!");
 				}
 			}
-			this.currentView.fire("show");
+			this.currentView.trigger("show");
 		},
 		forward: function( page ){
 			var currentState = history.state;

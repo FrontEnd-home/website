@@ -24,7 +24,7 @@
   seajs.use(["app","routes"], function(App, routes){
     var appInstance = App.newInstance([routes], "index");
 
-    appInstance.fire("start");
+    appInstance.trigger("start");
     this.Farman = appInstance;
   });
 </script>

@@ -17,24 +17,11 @@ define(function(require, exports, module) {
 			this.parent = parent;
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
-			this.on("show", function(){
-				self.$el.show();
-				self.onShow();	
-			});
-			this.on("hide", function(){
-				self.$el.hide();
-				self.onHide();
-			});
-			this.on("OpenClass", function(src){
-				self.onOpenClass(src);
+
+			this.on("OpenClass", function(){
 			});
 
-			this.on("OpenPage", function(page){
-				self.onOpenPage(page);
-			});
-
-			this.on("ClassChange", function(data){
-				alert(data);
+			this.on("OpenPage", function(){
 			});
 		},
 		render: function(data){
@@ -43,27 +30,16 @@ define(function(require, exports, module) {
 			data.forEach(function(item){
 				var dirInstance = Dir.newInstance([item]);
 				dirInstance.parent = self;
+				dirInstance.addObserver(self);
 				self.dirs.push(dirInstance);
 				self.$el.append( dirInstance.$el );
 			});
 		},
 		onShow: function(){
-			console.log("show");
+			self.$el.show();
 		},
 		onHide: function(){
-			console.log("hide");
-		},
-		onOpenClass: function(src){
-			this.parent.fire("OpenClass", src);
-		},
-		onCloseClass: function(src){
-			console.log(src);
-		},
-		onOpenPage: function(page){
-			this.parent.fire("OpenPage", page);
-		},
-		onClosePage: function(page){
-			console.log(page);
+			self.$el.hide();
 		}
 	});
 	module.exports = SideBar;

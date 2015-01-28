@@ -64,6 +64,10 @@ app.use(function(err, req, res, next) {
 
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
+  try{
+    var open = require("open");
+    open("http://localhost:"+ app.get('port'));
+  }catch(e){}
 });
 
 module.exports = app;

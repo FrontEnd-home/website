@@ -11,14 +11,14 @@ define(function(require, exports, module) {
 		init: function(data) {
 			this._super();
 
-			this.$el = $("<div></div>");
+			this.$el = $("<a></a>");
 			this.dirName = data.enname;
 			this.dirData = data;
 			this.render(data);
 			this.bindEvent();
 		},
 		renderTitle: function(){
-			var titleTpl = '<a href="/<%=enname%>" class="_list-item _icon-<%=enname%> _list-dir"><span class="_list-arrow"></span><%=name%></a>';
+			var titleTpl = '<span class="_list-arrow"></span><%=name%>';
 			var render = _.template(titleTpl);
 			var html = render(this.dirData);
 			this.$el.append(html);
@@ -26,12 +26,12 @@ define(function(require, exports, module) {
 		renderBody: function(){
 			var enname = this.dirData.enname;
 			var subData = this.dirData.sublist;
-			this.subDir = $("<div class='_list _list-sub'></div>");
 			var self = this;
+			this.subDir = $("<div class='_list _list-sub'></div>");
 			var bodyTpl = [
 				'<%subData.forEach(function(v){%>',
-				'<a href="/<%=parent%>/<%=v.enname%>" class="_list-item _icon-<%=v.enname%> _list-dir" data-slug="<%=v.enname%>">',
-					'<span class="_list-arrow"></span>',
+				'<a href="/<%=parent%>/<%=v.enname%>" class="_list-item _icon-<%=v.enname%> <%if(v.sublist){%>_list-dir<%}%>" data-slug="<%=v.enname%>">',
+					'<%if(v.sublist){%><span class="_list-arrow"></span><%}%>',
 					'<span class="_list-count"><%=v.quality%></span>',
 					'<%=v.name%>',
 				'</a>',
@@ -43,33 +43,25 @@ define(function(require, exports, module) {
 				parent : enname
 			});
 			this.subDir.append(html);
-			this.$el.append(this.subDir);
+			this.subDir.insertAfter(this.$el);
 		},
 		render: function(data){
-			this.$el.empty();
+			this.$el.addClass("_list-item").addClass("_icon-" + this.dirName).attr("href","/" + this.dirName);
+			if(this.dirData.sublist){
+				this.$el.addClass("_list-dir");
+			}
 			this.renderTitle();
 		},
 		bindEvent: function(e){
 			var self = this;
-			var arrowQuery = "a._icon-" + this.dirName + " ._list-arrow";
-			var dirTitle = "a._icon-" + this.dirName;
-
-			this.$el.delegate(dirTitle, "click", function(e){
+			this.$el.on("click", function(e){
 				var target = $(e.target);
-				if(target.hasClass("_list-arrow")){
-					var title = target.parent();
-					if(title.hasClass("open")){
-						title.removeClass("open");
-						self.fire("closeDir");
-					} else{
-						title.addClass("open");
-						self.fire("openDir");
-					}
+				if(!$(this).hasClass("open")){
+					$(this).addClass("open");
+					self.trigger("openDir");
 				} else{
-					if(!$(this).hasClass("open")){
-						$(this).addClass("open");
-						self.fire("openDir");
-					}
+					$(this).removeClass("open");
+					self.trigger("closeDir");
 				}
 			});
 

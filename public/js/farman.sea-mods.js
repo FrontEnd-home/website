@@ -499,46 +499,84 @@ define("storage",[],function(require,exports,module){
 define("events",["observer"],function(require,exports,module){
 
 	var Observer = require("observer");
+	var __slice = [].slice;
 
 	var Events = Class.extend({
 		init: function() {
-			this.__observers = Observer.newInstance();
+			this._observers = Observer.newInstance();
 
-			this.__listeners = {};
+			this._callbacks = {};
 		},
-		addObserver: function( observer ){
-			this.__observers.push( observer );
+		addObserver: function(observer) {
+			this._observers.add(observer);
 		},
-		removeObserver: function( observer ){
-			this.__observers.removeAtIndex( this.__observers.indexOf(observer, 0) );
+		removeObserver: function(observer) {
+			this._observers.removeAtIndex(this._observers.indexOf(observer, 0));
 		},
-		on: function(name, handler) {
-			if (this.__listeners[name] && this.__listeners[name].length) {
-				this.__listeners.push(handler);
+		on: function(event, callback) {
+			var name, _base, _i, _len, _ref;
+			if (event.indexOf(' ') >= 0) {
+				_ref = event.split(' ');
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					name = _ref[_i];
+					this.on(name, callback);
+				}
 			} else {
-				this.__listeners[name] = [handler];
+				((_base = (this._callbacks != null ? this._callbacks : this._callbacks = {}))[event] != null ? _base[event] : _base[event] = []).push(callback);
 			}
+			return this;
 		},
-		off: function(name) {
-			if (this.__listeners[name] && this.__listeners[name].length) {
-				this.__listeners[name] = [];
-			}
-		},
-		fire: function(name, data) {
-			if (this.__listeners[name] && this.__listeners[name].length) {
-				var handlers = this.__listeners[name];
-				handlers.forEach(function(handler) {
-					handler.call(null, data);
-				});
-			}
-			//底层事件自动冒泡到监视者.
-			var count = this.__observers.count();
-			for(var i = 0;i < count; i ++){
-				var observer = this.__observers.get(i);
-				if(observer && observer.fire){ 
-					observer.fire(name, data);
+		off: function(event, callback) {
+			var callbacks, index, name, _i, _len, _ref, _ref1;
+			if (event.indexOf(' ') >= 0) {
+				_ref = event.split(' ');
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					name = _ref[_i];
+					this.off(name, callback);
+				}
+			} else if ((callbacks = (_ref1 = this._callbacks) != null ? _ref1[event] : void 0) && (index = callbacks.indexOf(callback)) >= 0) {
+				callbacks.splice(index, 1);
+				if (!callbacks.length) {
+					delete this._callbacks[event];
 				}
 			}
+			return this;
+		},
+		trigger: function() {
+			var args, callback, callbacks, event, _i, _len, _ref, _ref1,  obServer;
+			event = arguments[0],
+			count = this._observers.count(),
+			args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+			if (callbacks = (_ref = this._callbacks) != null ? _ref[event] : void 0) {
+				_ref1 = callbacks.slice(0);
+				for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+					callback = _ref1[_i];
+					if (typeof callback === "function") {
+						callback.apply(null, args);
+					}
+				}
+			}
+			if (event !== 'all') {
+				this.trigger.apply(this, ['all', event].concat(__slice.call(args)));
+
+				for(_i = 0, _len = count; _i < _len; _i++){
+					obServer = this._observers.get(_i);
+					obServer.trigger.apply(obServer, [event].concat(__slice.call(args)) );
+				}
+			}
+			
+			return this;
+		},
+		removeEvent: function(event) {
+			var name, _i, _len, _ref;
+			if (this._callbacks != null) {
+				_ref = event.split(' ');
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					name = _ref[_i];
+					delete this._callbacks[name];
+				}
+			}
+			return this;
 		}
 	});
 	module.exports = Events;
@@ -642,14 +680,14 @@ define("dir",["events"],function(require,exports,module){
 		init: function(data) {
 			this._super();
 
-			this.$el = $("<div></div>");
+			this.$el = $("<a></a>");
 			this.dirName = data.enname;
 			this.dirData = data;
 			this.render(data);
 			this.bindEvent();
 		},
 		renderTitle: function(){
-			var titleTpl = '<a href="/<%=enname%>" class="_list-item _icon-<%=enname%> _list-dir"><span class="_list-arrow"></span><%=name%></a>';
+			var titleTpl = '<span class="_list-arrow"></span><%=name%>';
 			var render = _.template(titleTpl);
 			var html = render(this.dirData);
 			this.$el.append(html);
@@ -657,12 +695,12 @@ define("dir",["events"],function(require,exports,module){
 		renderBody: function(){
 			var enname = this.dirData.enname;
 			var subData = this.dirData.sublist;
-			this.subDir = $("<div class='_list _list-sub'></div>");
 			var self = this;
+			this.subDir = $("<div class='_list _list-sub'></div>");
 			var bodyTpl = [
 				'<%subData.forEach(function(v){%>',
-				'<a href="/<%=parent%>/<%=v.enname%>" class="_list-item _icon-<%=v.enname%> _list-dir" data-slug="<%=v.enname%>">',
-					'<span class="_list-arrow"></span>',
+				'<a href="/<%=parent%>/<%=v.enname%>" class="_list-item _icon-<%=v.enname%> <%if(v.sublist){%>_list-dir<%}%>" data-slug="<%=v.enname%>">',
+					'<%if(v.sublist){%><span class="_list-arrow"></span><%}%>',
 					'<span class="_list-count"><%=v.quality%></span>',
 					'<%=v.name%>',
 				'</a>',
@@ -674,33 +712,34 @@ define("dir",["events"],function(require,exports,module){
 				parent : enname
 			});
 			this.subDir.append(html);
-			this.$el.append(this.subDir);
+			this.subDir.insertAfter(this.$el);
+
+			// this.subDir.on("click", function(e){
+			// 	if($(this).hasClass("open")){
+			// 		$(this).removeClass("open");
+			// 		self.trigger("closeDir");
+			// 	} else{
+			// 		$(this).addClass("open");
+			// 		self.trigger("openDir");
+			// 	}
+			// });
 		},
 		render: function(data){
-			this.$el.empty();
+			this.$el.addClass("_list-item").addClass("_icon-" + this.dirName).attr("href","/" + this.dirName);
+			if(this.dirData.sublist){
+				this.$el.addClass("_list-dir");
+			}
 			this.renderTitle();
 		},
 		bindEvent: function(e){
 			var self = this;
-			var arrowQuery = "a._icon-" + this.dirName + " ._list-arrow";
-			var dirTitle = "a._icon-" + this.dirName;
-
-			this.$el.delegate(dirTitle, "click", function(e){
-				var target = $(e.target);
-				if(target.hasClass("_list-arrow")){
-					var title = target.parent();
-					if(title.hasClass("open")){
-						title.removeClass("open");
-						self.fire("closeDir");
-					} else{
-						title.addClass("open");
-						self.fire("openDir");
-					}
+			this.$el.on("click", function(e){
+				if(!$(this).hasClass("open")){
+					$(this).addClass("open");
+					self.trigger("openDir");
 				} else{
-					if(!$(this).hasClass("open")){
-						$(this).addClass("open");
-						self.fire("openDir");
-					}
+					$(this).removeClass("open");
+					self.trigger("closeDir");
 				}
 			});
 
@@ -740,24 +779,11 @@ define("sideBar",["events","dir"],function(require,exports,module){
 			this.parent = parent;
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
-			this.on("show", function(){
-				self.$el.show();
-				self.onShow();	
-			});
-			this.on("hide", function(){
-				self.$el.hide();
-				self.onHide();
-			});
-			this.on("OpenClass", function(src){
-				self.onOpenClass(src);
+
+			this.on("OpenClass", function(){
 			});
 
-			this.on("OpenPage", function(page){
-				self.onOpenPage(page);
-			});
-
-			this.on("ClassChange", function(data){
-				alert(data);
+			this.on("OpenPage", function(){
 			});
 		},
 		render: function(data){
@@ -766,27 +792,16 @@ define("sideBar",["events","dir"],function(require,exports,module){
 			data.forEach(function(item){
 				var dirInstance = Dir.newInstance([item]);
 				dirInstance.parent = self;
+				dirInstance.addObserver(self);
 				self.dirs.push(dirInstance);
 				self.$el.append( dirInstance.$el );
 			});
 		},
 		onShow: function(){
-			console.log("show");
+			self.$el.show();
 		},
 		onHide: function(){
-			console.log("hide");
-		},
-		onOpenClass: function(src){
-			this.parent.fire("OpenClass", src);
-		},
-		onCloseClass: function(src){
-			console.log(src);
-		},
-		onOpenPage: function(page){
-			this.parent.fire("OpenPage", page);
-		},
-		onClosePage: function(page){
-			console.log(page);
+			self.$el.hide();
 		}
 	});
 	module.exports = SideBar;
@@ -880,40 +895,36 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 				self.obServer();
 				self.hideLoading();
 			});
-			this.on("appEventListaner", function(){
-				self.registerEvent();
-			});
 		},
 		obServer: function(){
-			this.fire("appEventListaner");
+			this.registerEvent();
 			var self = this;
 			this.$el.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
-				 	self.fire("changeView", href);
+				 	self.trigger("changeView", href);
 				 }
 			});
 
 			$(window).on("popstate", function(){
 				var pathname = location.pathname;
-				self.fire("changeView", pathname);
+				self.trigger("changeView", pathname);
 			});
 		},
 		registerEvent: function(){
 			var self = this;
 			this.on("OpenClass", function(data){
-				self.currentView.fire("OpenClass",data);
+				self.currentView.trigger("OpenClass",data);
 			});
 			this.on("OpenPage", function(data){
-				self.currentView.fire("OpenPage",data);
+				self.currentView.trigger("OpenPage",data);
 			});
 			this.on("ClassChange", function(newClass){
-				self.sideBarView.fire("ClassChange", newClass);
+				self.sideBarView.trigger("ClassChange", newClass);
 			});
-
 			this.on("changeView", function(url){
-				self.sideBarView.fire("changeView", url);
+				self.sideBarView.trigger("changeView", url);
 				self.viewChange(url);
 			});
 		},
@@ -933,13 +944,14 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 				console.error("have no this page!, please check routes!");
 				return;
 			}
-			this.currentView.fire("hide");
+			this.currentView.trigger("hide");
 			if(this.views[view]){
 				this.currentView = this.views[view];
 			} else{
 				try{
 					this.currentView = require(view).newInstance();
 					this.currentView.parent = this;
+					this.currentView.addObserver(this);
 					this.viewsContainer.append( this.currentView.$el );
 					this.views[view] = this.currentView;
 					this.viewList.push(this.currentView);
@@ -947,7 +959,7 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 					console.error("have no this view!");
 				}
 			}
-			this.currentView.fire("show");
+			this.currentView.trigger("show");
 		},
 		forward: function( page ){
 			var currentState = history.state;

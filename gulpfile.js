@@ -183,7 +183,6 @@ var paths = {
     libs: [
         "src/js/libs/underscore.js",
         "src/js/libs/sea-debug.js",
-        "src/js/libs/sea-text.js",
         "src/js/libs/zepto.js",
         "src/js/libs/class.js"
     ],
