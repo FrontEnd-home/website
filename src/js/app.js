@@ -46,21 +46,11 @@ define(function(require, exports, module) {
 			});
 
 			$(window).on("popstate", function(){
-				var pathname = location.pathname;
-				self.trigger("changeView", pathname);
+				self.trigger("changeView", location.pathname);
 			});
 		},
 		registerEvent: function(){
 			var self = this;
-			this.on("OpenClass", function(data){
-				self.currentView.trigger("OpenClass",data);
-			});
-			this.on("OpenPage", function(data){
-				self.currentView.trigger("OpenPage",data);
-			});
-			this.on("ClassChange", function(newClass){
-				self.sideBarView.trigger("ClassChange", newClass);
-			});
 			this.on("changeView", function(url){
 				self.sideBarView.trigger("changeView", url);
 				self.viewChange(url);

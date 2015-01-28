@@ -19,12 +19,6 @@ define(function(require, exports, module) {
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
 
-			this.on("OpenClass", function(){
-			});
-
-			this.on("OpenPage", function(){
-			});
-
 			this.on("activeItem", function(item){
 				if(self.active){
 					self.active.removeClass("active");
