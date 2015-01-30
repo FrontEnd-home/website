@@ -7,10 +7,10 @@ var bodyParser = require('body-parser');
 
 
 var app = express();
-var routerController = require('./routes/controller').controller;
+var routerController = require('./routes/index');
 
 // view engine setup
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 //app.engine('jade', require('jade').__express);
@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get("/categoryAll.js", routerController.categoryAll);
 app.get("*", routerController.index);
 //routes(app);
 // app.use('/', routes);
@@ -65,8 +66,8 @@ app.use(function(err, req, res, next) {
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
   try{
-    var open = require("open");
-    open("http://localhost:"+ app.get('port'));
+  //  var open = require("open");
+   // open("http://localhost:"+ app.get('port'));
   }catch(e){}
 });
 

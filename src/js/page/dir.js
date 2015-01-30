@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 
 			this.$el = $("<a></a>");
 			this.dirs = [];
-			this.dirName = data.enname;
+			this.dirName = data.slug;
 			this.dirData = data;
 			this.render(data);
 			this.bindEvent();
@@ -40,7 +40,7 @@ define(function(require, exports, module) {
 				this.$el.addClass("_list-dir");
 				titleTpl += '<span class="_list-arrow"></span>';
 			}
-			titleTpl += '<span class="_list-count"><%=quality%></span><%=name%>';
+			titleTpl += '<span class="_list-count"><%=slug%></span><%=name%>';
 			var render = _.template(titleTpl);
 			var html = render(this.dirData);
 			this.$el.append(html);
