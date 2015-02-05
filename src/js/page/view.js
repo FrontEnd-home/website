@@ -28,12 +28,12 @@ define(function(require, exports, module) {
 			if(this.events){
 				for (var method in this.events) {
 					var matchMethod = /(click|tap|touchstart|touchmove|touchend|touchcancel|mouseup|mousedown|mouseover|mousemove|mouseout|input|blur|focus|keydown|keyup)\s+([\s\S]+)/i;
-					var macth = method.match(matchMethod);
+					var match = method.match(matchMethod);
 					var callback = this[this.events[method]];
 					var handler = (function() {
 						return $.proxy(callback, self);
 					})();
-					this.$el.delegate(macth[2], macth[1], handler);
+					this.$el.delegate(match[2], match[1], handler);
 				}
 			}
 		},

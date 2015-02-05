@@ -48,6 +48,7 @@ define(function(require, exports, module) {
 		bindEvent: function(e){
 			var self = this;
 			this.$el.on("click", function(e){
+				e.preventDefault();
 				var target = $(e.target);
 				if(target.hasClass("_list-arrow")){
 					var title = target.parent();
@@ -65,24 +66,25 @@ define(function(require, exports, module) {
 					}
 
 					if(!$(this).hasClass("active")){
-						self.trigger("activeItem", $(this));
+						self.trigger("changeView", $(this).attr("href"), $(this));
 					}
 				}
 			});
 
-			this.on("openDir", function(){
-				if(self.subDir){
-					self.subDir.show();
-				} else{
-					self.renderBody();
-				}
-			});
-
-			this.on("closeDir", function(){
-				if(self.subDir){
-					self.subDir.hide();
-				}
-			});
+			this.on("openDir", $.proxy(this.openDir, this));
+			this.on("closeDir", $.proxy(this.closeDir,this));
+		},
+		openDir: function(){
+			if(this.subDir){
+				this.subDir.show();
+			} else{
+				this.renderBody();
+			}
+		},
+		closeDir: function(){
+			if(this.subDir){
+				this.subDir.hide();
+			}
 		}
 	});
 	module.exports = Dir;

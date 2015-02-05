@@ -543,7 +543,7 @@ define("events",["observer"],function(require,exports,module){
 			return this;
 		},
 		trigger: function() {
-			var args, callback, callbacks, event, _i, _len, _ref, _ref1,  obServer;
+			var args, callback, callbacks, event, _i, _len, _ref, _ref1, obServer;
 			event = arguments[0],
 			count = this._observers.count(),
 			args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -556,9 +556,9 @@ define("events",["observer"],function(require,exports,module){
 					}
 				}
 			}
-			if (event !== 'all') {
-				this.trigger.apply(this, ['all', event].concat(__slice.call(args)));
 
+			//如果存在observer. 开始查找...
+			if(count > 0){
 				for(_i = 0, _len = count; _i < _len; _i++){
 					obServer = this._observers.get(_i);
 					obServer.trigger.apply(obServer, [event].concat(__slice.call(args)) );
@@ -717,6 +717,7 @@ define("dir",["events"],function(require,exports,module){
 		bindEvent: function(e){
 			var self = this;
 			this.$el.on("click", function(e){
+				e.preventDefault();
 				var target = $(e.target);
 				if(target.hasClass("_list-arrow")){
 					var title = target.parent();
@@ -734,24 +735,25 @@ define("dir",["events"],function(require,exports,module){
 					}
 
 					if(!$(this).hasClass("active")){
-						self.trigger("activeItem", $(this));
+						self.trigger("changeView", $(this).attr("href"), $(this));
 					}
 				}
 			});
 
-			this.on("openDir", function(){
-				if(self.subDir){
-					self.subDir.show();
-				} else{
-					self.renderBody();
-				}
-			});
-
-			this.on("closeDir", function(){
-				if(self.subDir){
-					self.subDir.hide();
-				}
-			});
+			this.on("openDir", $.proxy(this.openDir, this));
+			this.on("closeDir", $.proxy(this.closeDir,this));
+		},
+		openDir: function(){
+			if(this.subDir){
+				this.subDir.show();
+			} else{
+				this.renderBody();
+			}
+		},
+		closeDir: function(){
+			if(this.subDir){
+				this.subDir.hide();
+			}
 		}
 	});
 	module.exports = Dir;
@@ -777,7 +779,7 @@ define("sideBar",["events","dir"],function(require,exports,module){
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
 
-			this.on("activeItem", function(item){
+			this.on("changeView", function(view, item){
 				if(self.active){
 					self.active.removeClass("active");
 				} 
@@ -794,6 +796,9 @@ define("sideBar",["events","dir"],function(require,exports,module){
 				self.dirs.push(dirInstance);
 				self.$el.append( dirInstance.$el );
 			});
+		},
+		listen: function(url){
+			console.log( url );
 		},
 		onShow: function(){
 			self.$el.show();
@@ -834,12 +839,12 @@ define("view",["events"],function(require,exports,module){
 			if(this.events){
 				for (var method in this.events) {
 					var matchMethod = /(click|tap|touchstart|touchmove|touchend|touchcancel|mouseup|mousedown|mouseover|mousemove|mouseout|input|blur|focus|keydown|keyup)\s+([\s\S]+)/i;
-					var macth = method.match(matchMethod);
+					var match = method.match(matchMethod);
 					var callback = this[this.events[method]];
 					var handler = (function() {
 						return $.proxy(callback, self);
 					})();
-					this.$el.delegate(macth[2], macth[1], handler);
+					this.$el.delegate(match[2], match[1], handler);
 				}
 			}
 		},
@@ -873,7 +878,7 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 	var App = Events.extend({
 		init: function( routes, defaultView ) {
 			this._super();
-			
+			this.name = "APP";
 			this.$el = $('body');
 			this.root = $("._app");
 			this.viewsContainer = this.root.find("._container");
@@ -883,21 +888,26 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 			this.viewList = [];
 			this.currentView = Events.newInstance();
 			this.sideBarView = SideBar.newInstance([this, sideBarData]);
+			this.sideBarView.addObserver(this);
+
 			this.sideBarContainer.append( this.sideBarView.$el );
 
 			this.parser = Parser.newInstance([location, routes, defaultView]);
-			this.updateView();
+			
 
 			var self = this;
 			this.on("start", function(){
 				self.obServer();
 				self.hideLoading();
+
+				//最开始监听pathname.
+				self.trigger("changeView", location.pathname);
 			});
 		},
 		obServer: function(){
 			this.registerEvent();
 			var self = this;
-			this.$el.delegate("a","click", function(e){
+			this.viewsContainer.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
@@ -912,7 +922,7 @@ define("app",["parser","events","sideBar"],function(require,exports,module){
 		registerEvent: function(){
 			var self = this;
 			this.on("changeView", function(url){
-				self.sideBarView.trigger("changeView", url);
+				self.sideBarView.listen(url);
 				self.viewChange(url);
 			});
 		},

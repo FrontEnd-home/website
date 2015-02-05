@@ -5,7 +5,7 @@ define("routes",[],function(require,exports,module){
 			match: /^\/(index|index.html)?/i
 		},{
 			name: "list",
-			match: /^\/list\/[\s\S]+/i
+			match: /^\/(javascript|js|html|css)(\/\w)?/i
 		}, {
 			name: "tags",
 			match: /^\/tags\/[\s\S]+/i

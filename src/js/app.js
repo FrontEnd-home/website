@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 	var App = Events.extend({
 		init: function( routes, defaultView ) {
 			this._super();
-			
+			this.name = "APP";
 			this.$el = $('body');
 			this.root = $("._app");
 			this.viewsContainer = this.root.find("._container");
@@ -23,21 +23,26 @@ define(function(require, exports, module) {
 			this.viewList = [];
 			this.currentView = Events.newInstance();
 			this.sideBarView = SideBar.newInstance([this, sideBarData]);
+			this.sideBarView.addObserver(this);
+
 			this.sideBarContainer.append( this.sideBarView.$el );
 
 			this.parser = Parser.newInstance([location, routes, defaultView]);
-			this.updateView();
+			
 
 			var self = this;
 			this.on("start", function(){
 				self.obServer();
 				self.hideLoading();
+
+				//最开始监听pathname.
+				self.trigger("changeView", location.pathname);
 			});
 		},
 		obServer: function(){
 			this.registerEvent();
 			var self = this;
-			this.$el.delegate("a","click", function(e){
+			this.viewsContainer.delegate("a","click", function(e){
 				e.preventDefault();
 				 var href = $(e.target).attr("href");
 				 if(href){
@@ -52,7 +57,7 @@ define(function(require, exports, module) {
 		registerEvent: function(){
 			var self = this;
 			this.on("changeView", function(url){
-				self.sideBarView.trigger("changeView", url);
+				self.sideBarView.listen(url);
 				self.viewChange(url);
 			});
 		},

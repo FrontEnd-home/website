@@ -51,7 +51,7 @@ define(function(require, exports, module) {
 			return this;
 		},
 		trigger: function() {
-			var args, callback, callbacks, event, _i, _len, _ref, _ref1,  obServer;
+			var args, callback, callbacks, event, _i, _len, _ref, _ref1, obServer;
 			event = arguments[0],
 			count = this._observers.count(),
 			args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -64,9 +64,9 @@ define(function(require, exports, module) {
 					}
 				}
 			}
-			if (event !== 'all') {
-				this.trigger.apply(this, ['all', event].concat(__slice.call(args)));
 
+			//如果存在observer. 开始查找...
+			if(count > 0){
 				for(_i = 0, _len = count; _i < _len; _i++){
 					obServer = this._observers.get(_i);
 					obServer.trigger.apply(obServer, [event].concat(__slice.call(args)) );

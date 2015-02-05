@@ -19,7 +19,7 @@ define(function(require, exports, module) {
 			this.$el = $("<div class='_list'></div>");
 			this.render(data);
 
-			this.on("activeItem", function(item){
+			this.on("changeView", function(view, item){
 				if(self.active){
 					self.active.removeClass("active");
 				} 
@@ -36,6 +36,9 @@ define(function(require, exports, module) {
 				self.dirs.push(dirInstance);
 				self.$el.append( dirInstance.$el );
 			});
+		},
+		listen: function(url){
+			console.log( url );
 		},
 		onShow: function(){
 			self.$el.show();
